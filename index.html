@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- وسوم تحسين محركات البحث والمشاركة عبر الإنترنت (SEO & Open Graph) -->
+    <title>من أكون؟ 🤔💻 - الصف الخامس الأساسي | المنهاج الفلسطيني</title>
+    <meta name="description" content="لعبة (من أكون؟) التعليمية التفاعلية لطالبات الصف الخامس الأساسي وفق المنهاج الفلسطيني لدرس من داخل الحاسوب (المكونات المادية والبرمجية) مع شهادة تقدير فورية.">
+    <meta name="keywords" content="تكنولوجيا, الصف الخامس, المنهاج الفلسطيني, من أكون, من داخل الحاسوب, مكونات الحاسوب, لعبة تعليمية">
+    <meta name="author" content="مادة التكنولوجيا - الصف الخامس">
+    <meta name="theme-color" content="#9333ea">
+
+    <!-- وسوم المشاركة على فيسبوك وواتساب وتيليجرام (Open Graph) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="لعبة من أكون؟ 🤔💻 - الصف الخامس الأساسي">
+    <meta property="og:description" content="اختبري معلوماتكِ في مكونات الحاسوب المادية والبرمجية واحصلي على شهادة تفوق باسمكِ!">
+    <meta property="og:locale" content="ar_PS">
+
+    <!-- أيقونة تبويب المتصفح المدمجة (Favicon) لتعمل بدون ملفات خارجية -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
+
+    <!-- استدعاء خط تجوال المناسب للغة العربية والأطفال -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- مكتبة Tailwind CSS للتنسيق -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- مكتبة أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- مكتبة Tone.js للمؤثرات الصوتية -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- مكتبة Confetti للاحتفال -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            background-image: radial-gradient(#e0c3fc 1px, transparent 1px), radial-gradient(#8ec5fc 1px, #f8fafc 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* تأثيرات الأزرار والبطاقات */
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 3px solid #f3e8ff;
+            box-shadow: 0 15px 35px rgba(147, 51, 234, 0.12);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-3d {
+            transition: all 0.15s ease;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        /* حركات مخصصة */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-in {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* تصميم الشهادة */
+        .certificate-border {
+            background: #fff;
+            border: 12px double #9333ea;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .certificate-border::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 2px dashed #ec4899;
+            pointer-events: none;
+        }
+
+        /* تنسيق الطباعة للشهادة */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificate-container, #certificate-container * {
+                visibility: visible;
+            }
+            #certificate-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                box-shadow: none;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+
+    <!-- الحاوية الرئيسية للعبة -->
+    <div class="w-full max-w-3xl mx-auto">
+        
+        <!-- 1. شاشة البداية -->
+        <div id="start-screen" class="game-card rounded-3xl p-6 md:p-10 text-center pop-in">
+            <div class="inline-block bg-purple-100 text-purple-700 font-bold px-4 py-1.5 rounded-full text-sm mb-4">
+                🇵🇸 المنهاج الفلسطيني - التكنولوجيا - الصف الخامس الأساسي
+            </div>
+            
+            <div class="my-4 animate-float">
+                <span class="text-7xl">🤔💻</span>
+            </div>
+
+            <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-3">
+                من أكون؟
+            </h1>
+            <p class="text-gray-600 text-lg md:text-xl mb-8 max-w-xl mx-auto leading-relaxed">
+                أهلاً بكِ يا مبدعة في تحدي <strong class="text-purple-700">"من أكون؟"</strong>! هيا نتعرف على مكونات الحاسوب <strong class="text-purple-600">المادية</strong> و<strong class="text-pink-600">البرمجية</strong> لنحصل على لقب التكنولوجيا المميز!
+            </p>
+
+            <!-- حقل إدخال اسم الطالبة -->
+            <div class="max-w-md mx-auto mb-6">
+                <label for="student-name" class="block text-right text-gray-700 font-bold mb-2 text-lg">
+                    <i class="fas fa-user-graduate text-purple-500 ml-1"></i> اكتبي اسمكِ الجميل هنا يا بطلة:
+                </label>
+                <input type="text" id="student-name" placeholder="مثال: سارة أحمد" 
+                    class="w-full px-5 py-4 rounded-2xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none text-lg text-center font-bold text-gray-800 shadow-inner transition">
+                <p id="name-error" class="text-red-500 text-sm mt-2 hidden font-bold">
+                    <i class="fas fa-exclamation-circle"></i> الرجاء كتابة اسمكِ أولاً لنتمكن من إصدار شهادتكِ!
+                </p>
+            </div>
+
+            <button onclick="startGame()" 
+                class="btn-3d bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-extrabold text-xl px-10 py-4 rounded-2xl inline-flex items-center gap-3 cursor-pointer">
+                <span>ابدئي المغامرة الآن</span>
+                <i class="fas fa-rocket"></i>
+            </button>
+        </div>
+
+        <!-- 2. شاشة اللعب -->
+        <div id="game-screen" class="game-card rounded-3xl p-5 md:p-8 hidden">
+            <!-- الشريط العلوي: التقدم والنقاط -->
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b-2 border-purple-50">
+                <div class="flex items-center gap-2">
+                    <span class="bg-purple-100 text-purple-700 font-bold px-3 py-1 rounded-xl text-sm md:text-base">
+                        <i class="fas fa-user text-purple-500 ml-1"></i> <span id="display-name">الطالبة</span>
+                    </span>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <span class="bg-amber-100 text-amber-800 font-bold px-4 py-1.5 rounded-xl text-base">
+                        <i class="fas fa-star text-amber-500 ml-1"></i> النقاط: <span id="score-display">0</span>
+                    </span>
+                    <span class="bg-pink-100 text-pink-700 font-bold px-4 py-1.5 rounded-xl text-base">
+                        السؤال: <span id="question-counter">1</span> / <span id="total-questions">10</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- شريط التقدم المرئي -->
+            <div class="w-full bg-gray-100 rounded-full h-3 mb-6 overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500" style="width: 10%"></div>
+            </div>
+
+            <!-- بطاقة العنصر الحالي -->
+            <div id="question-card" class="bg-gradient-to-b from-purple-50 to-white border-2 border-purple-100 rounded-2xl p-6 text-center mb-6 relative">
+                <span id="stage-badge" class="inline-block bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full mb-3">
+                    اقرئي اللغز واكتشفي من أكون!
+                </span>
+                
+                <!-- الرسم التوضيحي / الأيقونة -->
+                <div id="item-visual" class="w-24 h-24 mx-auto bg-white rounded-2xl shadow-md flex items-center justify-center text-5xl mb-4 border-2 border-purple-100">
+                    ❓
+                </div>
+
+                <!-- عنوان اللغز -->
+                <h2 class="text-2xl md:text-3xl font-extrabold text-purple-800 mb-3">
+                    من أكون؟ 🤔
+                </h2>
+
+                <!-- نص اللغز حسب الكتاب -->
+                <p id="item-desc" class="text-gray-800 font-bold text-lg md:text-xl max-w-xl mx-auto bg-white p-4 rounded-2xl border-2 border-purple-100 shadow-sm leading-relaxed">
+                    أنا بمثابة العقل المدبر للحاسوب، أقوم بمعالجة البيانات وتنفيذ العمليات الحسابية والمنطقية.. فمن أكون؟
+                </p>
+            </div>
+
+            <!-- أزرار الاختيار المتعدد لاسم المكون -->
+            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- يتم توليد الخيارات تلقائياً بواسطة الجافاسكربت -->
+            </div>
+
+            <!-- رسالة التغذية الراجعة الفورية -->
+            <div id="feedback-box" class="hidden mt-6 p-4 rounded-2xl text-center font-bold text-lg transition-all">
+            </div>
+        </div>
+
+        <!-- 3. شاشة النتيجة والشهادة -->
+        <div id="result-screen" class="hidden pop-in">
+            
+            <!-- بطاقة الشهادة -->
+            <div id="certificate-container" class="certificate-border rounded-3xl p-6 md:p-10 text-center mb-6">
+                <!-- زخرفة علوية -->
+                <div class="flex justify-between items-center text-purple-400 text-2xl mb-2">
+                    <i class="fas fa-star"></i>
+                    <span class="text-sm font-bold text-gray-500 tracking-wider">دولة فلسطين - وزارة التربية والتعليم</span>
+                    <i class="fas fa-star"></i>
+                </div>
+
+                <div class="my-3">
+                    <span id="badge-icon" class="text-6xl inline-block animate-bounce">👑</span>
+                </div>
+
+                <h2 class="text-3xl md:text-4xl font-extrabold text-purple-800 mb-2">
+                    شهادة تفوق وإبداع
+                </h2>
+                <p class="text-gray-500 font-medium mb-6">في مادة التكنولوجيا - درس (من داخل الحاسوب)</p>
+
+                <p class="text-lg text-gray-700 mb-2">تُمنح هذه الشهادة بكل فخر واعتزاز للطالبة المبدعة:</p>
+                
+                <!-- اسم الطالبة -->
+                <div class="my-4 py-2 px-6 bg-purple-50 rounded-2xl inline-block border-2 border-purple-200">
+                    <h3 id="cert-student-name" class="text-3xl md:text-4xl font-extrabold text-pink-600">
+                        اسم الطالبة
+                    </h3>
+                </div>
+
+                <p class="text-lg text-gray-700 mt-3 mb-2">وذلك لنجاحها في استكشاف مكونات الحاسوب المادية والبرمجية، واستحقاقها لقب:</p>
+
+                <!-- اللقب المكتسب -->
+                <div class="my-3">
+                    <span id="cert-title" class="inline-block bg-gradient-to-r from-amber-400 to-orange-500 text-white text-2xl md:text-3xl font-extrabold px-8 py-3 rounded-full shadow-lg">
+                        عبقرية الحاسوب
+                    </span>
+                </div>
+
+                <!-- النتيجة والتفاصيل -->
+                <div class="mt-6 pt-4 border-t border-gray-200 flex flex-wrap justify-around items-center gap-4 text-gray-600">
+                    <div>
+                        <span class="block text-xs text-gray-400">النتيجة النهائية</span>
+                        <strong id="cert-score" class="text-xl text-purple-700">10 / 10</strong>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-gray-400">الصف الدراسي</span>
+                        <strong class="text-lg text-gray-700">الخامس الأساسي</strong>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-gray-400">التقدير</span>
+                        <strong id="cert-grade" class="text-lg text-green-600">ممتاز</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أزرار التحكم بعد النهاية -->
+            <div class="flex flex-wrap justify-center gap-4 no-print">
+                <button onclick="window.print()" 
+                    class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-lg px-8 py-3.5 rounded-2xl inline-flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-print"></i>
+                    <span>طباعة الشهادة / حفظ PDF</span>
+                </button>
+
+                <button onclick="restartGame()" 
+                    class="btn-3d bg-purple-600 hover:bg-purple-700 text-white font-bold text-lg px-8 py-3.5 rounded-2xl inline-flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-redo"></i>
+                    <span>العب مرة أخرى</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // قاعدة بيانات الألغاز الملتزمة 100% بالمنهاج الفلسطيني للصف الخامس (درس: من داخل الحاسوب)
+        // تم استبعاد مزود الطاقة، كرت الشاشة، وكرت الصوت بناءً على طلب المعلمة
+        const gameQuestions = [
+            {
+                riddle: "أنا بمثابة العقل المدبر للحاسوب، أقوم بمعالجة البيانات وتنفيذ العمليات الحسابية والمنطقية.. فمن أكون؟",
+                answer: "وحدة المعالجة المركزية (CPU)",
+                options: ["وحدة المعالجة المركزية (CPU)", "القرص الصلب (Hard Disk)", "اللوحة الأم (Motherboard)", "برنامج الرسام (Paint)"],
+                type: "مكون مادي",
+                icon: "🧠",
+                explanation: "أحسنتِ! أنا وحدة المعالجة المركزية (CPU)، وأنا من المكونات المادية الملموسة."
+            },
+            {
+                riddle: "أنا اللوحة الإلكترونية الرئيسية داخل صندوق الحاسوب، تتصل بي جميع المكونات الداخلية لتبادل البيانات.. فمن أكون؟",
+                answer: "اللوحة الأم (Motherboard)",
+                options: ["اللوحة الأم (Motherboard)", "الذاكرة الرئيسية (RAM)", "نظام التشغيل ويندوز", "الفأرة ولوحة المفاتيح"],
+                type: "مكون مادي",
+                icon: "🎛️",
+                explanation: "رائعة! أنا اللوحة الأم (Motherboard)، وأُصنّف ضمن المكونات المادية."
+            },
+            {
+                riddle: "أنا ذاكرة أخزن البيانات والبرامج مؤقتاً أثناء عمل الحاسوب، وأفقد محتوياتي فور انقطاع التيار الكهربائي.. فمن أكون؟",
+                answer: "الذاكرة الرئيسية (RAM)",
+                options: ["الذاكرة الرئيسية (RAM)", "القرص الصلب (Hard Disk)", "وحدة المعالجة المركزية (CPU)", "معالج النصوص (Word)"],
+                type: "مكون مادي",
+                icon: "📟",
+                explanation: "ممتازة! أنا الذاكرة الرئيسية (RAM)، قطعة إلكترونية ملموسة (مكون مادي)."
+            },
+            {
+                riddle: "أنا وحدة التخزين الرئيسية الدائمة في الحاسوب، تحفظون بداخلي نظام التشغيل وملفاتكم وصوركم لفترات طويلة.. فمن أكون؟",
+                answer: "القرص الصلب (Hard Disk)",
+                options: ["القرص الصلب (Hard Disk)", "الذاكرة الرئيسية (RAM)", "اللوحة الأم (Motherboard)", "نظام التشغيل أندرويد"],
+                type: "مكون مادي",
+                icon: "💾",
+                explanation: "صحيح! أنا القرص الصلب (Hard Disk)، وأنا من المكونات المادية في الحاسوب."
+            },
+            {
+                riddle: "أنا البرنامج الأساسي الذي يدير عمل الحاسوب ويتيح لكِ التفاعل معه وتشغيل البرامج الأخرى، وبدوني لا يعمل الحاسوب.. فمن أكون؟",
+                answer: "نظام التشغيل ويندوز (Windows)",
+                options: ["نظام التشغيل ويندوز (Windows)", "برنامج الرسام (Paint)", "اللوحة الأم (Motherboard)", "وحدة المعالجة المركزية (CPU)"],
+                type: "مكون برمجي",
+                icon: "🪟",
+                explanation: "بارك الله فيكِ! أنا نظام التشغيل ويندوز، وأنا من المكونات البرمجية الأساسية."
+            },
+            {
+                riddle: "أنا برنامج تطبيقي تستخدمينني لكتابة التقارير والأبحاث المدرسية وتنسيق النصوص.. فمن أكون؟",
+                answer: "برنامج معالج النصوص (Word)",
+                options: ["برنامج معالج النصوص (Word)", "برنامج الرسام (Paint)", "نظام التشغيل أندرويد", "لوحة المفاتيح"],
+                type: "مكون برمجي",
+                icon: "📝",
+                explanation: "أحسنتِ! أنا برنامج معالج النصوص (Word)، وأُعدّ من المكونات البرمجية التطبيقية."
+            },
+            {
+                riddle: "أنا برنامج تطبيقي ممتع يتيح لكِ الرسم والتلوين وتصميم الصور الجميلة على جهاز الحاسوب.. فمن أكون؟",
+                answer: "برنامج الرسام (Paint)",
+                options: ["برنامج الرسام (Paint)", "معالج النصوص (Word)", "الشاشة والطابعة", "الذاكرة الرئيسية (RAM)"],
+                type: "مكون برمجي",
+                icon: "🎨",
+                explanation: "مبدعة! أنا برنامج الرسام (Paint)، وأنا من المكونات البرمجية."
+            },
+            {
+                riddle: "نحن من وحدات الإدخال الأساسية، تستخدميننا لإدخال النصوص والأوامر والتحكم بالمؤشر داخل الحاسوب.. فمن نحن؟",
+                answer: "الفأرة ولوحة المفاتيح",
+                options: ["الفأرة ولوحة المفاتيح", "الشاشة والطابعة", "القرص الصلب (Hard Disk)", "نظام التشغيل ويندوز"],
+                type: "مكون مادي",
+                icon: "🖱️",
+                explanation: "صحيح! نحن الفأرة ولوحة المفاتيح، ونُصنّف ضمن المكونات المادية (وحدات الإدخال)."
+            },
+            {
+                riddle: "نحن من وحدات الإخراج، نعرض لكِ المعلومات والنتائج إما مرئياً أو مطبوعة على الورق.. فمن نحن؟",
+                answer: "الشاشة والطابعة",
+                options: ["الشاشة والطابعة", "الفأرة ولوحة المفاتيح", "اللوحة الأم (Motherboard)", "برنامج الرسام (Paint)"],
+                type: "مكون مادي",
+                icon: "🖥️",
+                explanation: "رائعة! نحن الشاشة والطابعة، ونُعدّ من المكونات المادية (وحدات الإخراج)."
+            },
+            {
+                riddle: "أنا نظام تشغيل برمجي ذكي أُستخدم في الهواتف الذكية والأجهزة اللوحية لإدارة التطبيقات.. فمن أكون؟",
+                answer: "نظام التشغيل أندرويد (Android)",
+                options: ["نظام التشغيل أندرويد (Android)", "القرص الصلب (Hard Disk)", "وحدة المعالجة المركزية (CPU)", "معالج النصوص (Word)"],
+                type: "مكون برمجي",
+                icon: "🤖",
+                explanation: "ممتازة! أنا نظام التشغيل أندرويد، وأنا من المكونات البرمجية."
+            }
+        ];
+
+        // متغيرات حالة اللعبة
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let studentName = "";
+        let isAnswering = false;
+
+        // تهيئة المؤثرات الصوتية باستخدام Tone.js
+        let synth;
+        function initAudio() {
+            if (!synth) {
+                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+            }
+        }
+
+        function playCorrectSound() {
+            try {
+                initAudio();
+                if (Tone.context.state !== 'running') Tone.start();
+                const now = Tone.now();
+                synth.triggerAttackRelease("C5", "8n", now);
+                synth.triggerAttackRelease("E5", "8n", now + 0.1);
+                synth.triggerAttackRelease("G5", "4n", now + 0.2);
+            } catch (e) { console.log(e); }
+        }
+
+        function playWrongSound() {
+            try {
+                initAudio();
+                if (Tone.context.state !== 'running') Tone.start();
+                const now = Tone.now();
+                synth.triggerAttackRelease("E3", "8n", now);
+                synth.triggerAttackRelease("C3", "4n", now + 0.15);
+            } catch (e) { console.log(e); }
+        }
+
+        function playWinSound() {
+            try {
+                initAudio();
+                if (Tone.context.state !== 'running') Tone.start();
+                const now = Tone.now();
+                synth.triggerAttackRelease("C5", "16n", now);
+                synth.triggerAttackRelease("E5", "16n", now + 0.1);
+                synth.triggerAttackRelease("G5", "16n", now + 0.2);
+                synth.triggerAttackRelease("C6", "2n", now + 0.3);
+            } catch (e) { console.log(e); }
+        }
+
+        // خلط الأسئلة عشوائياً
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // بدء اللعبة
+        function startGame() {
+            const nameInput = document.getElementById('student-name');
+            const nameError = document.getElementById('name-error');
+            
+            if (nameInput.value.trim() === "") {
+                nameError.classList.remove('hidden');
+                nameInput.classList.add('border-red-400', 'animate-shake');
+                setTimeout(() => nameInput.classList.remove('animate-shake'), 500);
+                return;
+            }
+
+            nameError.classList.add('hidden');
+            studentName = nameInput.value.trim();
+            
+            // إعداد المتغيرات
+            currentQuestions = shuffleArray(gameQuestions);
+            currentIndex = 0;
+            score = 0;
+            isAnswering = false;
+
+            // تحديث الواجهة
+            document.getElementById('display-name').textContent = studentName;
+            document.getElementById('total-questions').textContent = currentQuestions.length;
+            document.getElementById('score-display').textContent = score;
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+
+            loadQuestion();
+        }
+
+        // تحميل السؤال الحالي
+        function loadQuestion() {
+            isAnswering = false;
+            const q = currentQuestions[currentIndex];
+            
+            document.getElementById('question-counter').textContent = currentIndex + 1;
+            const progressPercent = ((currentIndex) / currentQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            // إخفاء التغذية الراجعة السابقة
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.add('hidden');
+
+            // تأثير حركي للبطاقة
+            const card = document.getElementById('question-card');
+            card.classList.remove('pop-in');
+            void card.offsetWidth; // إعادة تشغيل الأنيميشن
+            card.classList.add('pop-in');
+
+            // إظهار علامة استفهام أثناء التفكير باللغز
+            document.getElementById('item-visual').textContent = "🤔";
+            document.getElementById('item-desc').textContent = q.riddle;
+
+            // خلط وعرض خيارات الأسماء الأربعة
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            const shuffledOptions = shuffleArray(q.options);
+
+            const buttonColors = [
+                "bg-purple-600 hover:bg-purple-700 border-purple-800",
+                "bg-blue-500 hover:bg-blue-600 border-blue-700",
+                "bg-pink-500 hover:bg-pink-600 border-pink-700",
+                "bg-indigo-500 hover:bg-indigo-600 border-indigo-700"
+            ];
+
+            shuffledOptions.forEach((optionText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-3d ${buttonColors[idx % buttonColors.length]} text-white p-4 rounded-2xl flex items-center justify-center text-center cursor-pointer border-b-4 transition-all`;
+                btn.innerHTML = `<span class="text-lg md:text-xl font-extrabold">${optionText}</span>`;
+                btn.onclick = () => checkAnswer(optionText, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // التحقق من الإجابة
+        function checkAnswer(selectedOption, clickedBtn) {
+            if (isAnswering) return;
+            isAnswering = true;
+
+            const q = currentQuestions[currentIndex];
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'border-green-300', 'bg-red-100', 'text-red-800', 'border-red-300');
+
+            // كشف أيقونة المكون الحقيقية بعد الإجابة
+            document.getElementById('item-visual').textContent = q.icon;
+
+            // تمييز الأزرار بصرياً
+            const allButtons = document.getElementById('options-container').querySelectorAll('button');
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent.trim() === q.answer) {
+                    btn.className = "btn-3d bg-emerald-500 text-white p-4 rounded-2xl flex items-center justify-center text-center border-b-4 border-emerald-700 ring-4 ring-emerald-200";
+                } else if (btn === clickedBtn) {
+                    btn.className = "btn-3d bg-red-500 text-white p-4 rounded-2xl flex items-center justify-center text-center border-b-4 border-red-700 opacity-90";
+                } else {
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            if (selectedOption === q.answer) {
+                // إجابة صحيحة
+                score++;
+                document.getElementById('score-display').textContent = score;
+                playCorrectSound();
+                
+                feedbackBox.classList.add('bg-green-100', 'text-green-800', 'border-2', 'border-green-300', 'pop-in');
+                feedbackBox.innerHTML = `<i class="fas fa-check-circle text-green-600 text-xl ml-2"></i> ${q.explanation}`;
+            } else {
+                // إجابة خاطئة
+                playWrongSound();
+                
+                feedbackBox.classList.add('bg-red-100', 'text-red-800', 'border-2', 'border-red-300', 'animate-shake');
+                feedbackBox.innerHTML = `<i class="fas fa-times-circle text-red-600 text-xl ml-2"></i> حاولي مرة قادمة! الإجابة الصحيحة هي: <strong>${q.answer}</strong> (وهو ${q.type}).`;
+            }
+
+            // الانتقال للسؤال التالي بعد ثانيتين و800 جزء من الثانية لقراءة المعلومة
+            setTimeout(() => {
+                currentIndex++;
+                if (currentIndex < currentQuestions.length) {
+                    loadQuestion();
+                } else {
+                    document.getElementById('progress-bar').style.width = `100%`;
+                    showCertificate();
+                }
+            }, 2800);
+        }
+
+        // عرض الشهادة واللقب حسب النتيجة
+        function showCertificate() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            playWinSound();
+
+            // تحديد اللقب والتقدير بناءً على النتيجة من 10
+            let title = "";
+            let grade = "";
+            let badge = "";
+
+            if (score >= 9) {
+                title = "👑 مهندسة الحاسوب العبقرية";
+                grade = "ممتاز (امتياز)";
+                badge = "🏆";
+                triggerConfetti();
+            } else if (score >= 7) {
+                title = "🌟 خبيرة التكنولوجيا المبدعة";
+                grade = "جيد جداً";
+                badge = "🥇";
+                triggerConfetti();
+            } else if (score >= 5) {
+                title = "💡 مستكشفة الحاسوب الذكية";
+                grade = "جيد";
+                badge = "🥈";
+            } else {
+                title = "🌱 مبرمجة المستقبل الواعدة";
+                grade = "تحتاجين لمراجعة الدرس";
+                badge = "🎖️";
+            }
+
+            // تعبئة بيانات الشهادة
+            document.getElementById('cert-student-name').textContent = studentName;
+            document.getElementById('cert-title').textContent = title;
+            document.getElementById('cert-score').textContent = `${score} من ${currentQuestions.length}`;
+            document.getElementById('cert-grade').textContent = grade;
+            document.getElementById('badge-icon').textContent = badge;
+        }
+
+        // إطلاق قصاصات الاحتفال
+        function triggerConfetti() {
+            try {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            } catch (e) { console.log(e); }
+        }
+
+        // إعادة اللعب
+        function restartGame() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
